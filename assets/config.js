@@ -19,7 +19,7 @@ window.SURVIVOR_CONFIG = {
   },
 
   // Leave blank for local-only mode, or paste your Apps Script URL:
-  // sheetsWebAppUrl: "https://script.google.com/macros/s/AKfycbzyVQL7_3X7s1yid3E1BuwgTSygrAIj8EVek7151RqEhdcMvlj0YLXaYAQHQt7mzwQS/exec",
+  // sheetsWebAppUrl: "https://script.google.com/macros/s/AKfycbzsrUOYVxiixQSI_4a4xNeK7IhG3TXCnCyoXvprvIaNTjDwMa2klCOiysVTy697od-5jg/exec",
   sheetsWebAppUrl: "",
 
 };
