@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Set Up — Fortnite Survivor</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div class="wrap">
+  <div id="brand-slot"></div>
+
+  <div class="panel">
+    <h2>Squad</h2>
+    <div class="field-row">
+      <div>
+        <label for="name1">Player 1</label>
+        <input type="text" id="name1" placeholder="Player 1" />
+      </div>
+      <div>
+        <label for="name2">Player 2</label>
+        <input type="text" id="name2" placeholder="Player 2" />
+      </div>
+      <div>
+        <label for="name3">Player 3</label>
+        <input type="text" id="name3" placeholder="Player 3" />
+      </div>
+      <div>
+        <label for="name4">Player 4</label>
+        <input type="text" id="name4" placeholder="Player 4" />
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>How does it end?</h2>
+    <div class="option-grid" id="end-options">
+      <div class="option-card" data-type="games">
+        <div class="opt-title">Set number of games</div>
+        <div class="opt-desc">Ends after a fixed number of rounds</div>
+      </div>
+      <div class="option-card" data-type="wins">
+        <div class="opt-title">First to X wins</div>
+        <div class="opt-desc">Ends when someone hits a win total</div>
+      </div>
+      <div class="option-card" data-type="time">
+        <div class="opt-title">Time limit</div>
+        <div class="opt-desc">Ends at a set date/time</div>
+      </div>
+      <div class="option-card" data-type="manual">
+        <div class="opt-title">Until someone taps out</div>
+        <div class="opt-desc">Ends whenever you hit "End Game" — no auto cutoff</div>
+      </div>
+    </div>
+
+    <div id="games-input" style="display:none;">
+      <label for="gamesVal">Number of games</label>
+      <input type="number" id="gamesVal" min="1" value="10" />
+    </div>
+    <div id="wins-input" style="display:none;">
+      <label for="winsVal">Wins needed</label>
+      <input type="number" id="winsVal" min="1" value="3" />
+    </div>
+    <div id="time-input" style="display:none;">
+      <label for="timeVal">Ends at</label>
+      <input type="datetime-local" id="timeVal" />
+    </div>
+  </div>
+
+  <div class="banner" id="warn-msg"></div>
+
+  <div class="btn-row">
+    <button class="btn" id="startBtn">Start Game →</button>
+    <a href="index.html" class="btn secondary" style="text-decoration:none; display:inline-flex; align-items:center;">Back to Dashboard</a>
+  </div>
+
+  <div class="footer-nav">
+    <span class="sync-dot" id="syncDot"></span> <span id="syncLabel">checking sync…</span>
+  </div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/brand.js"></script>
+<script>
+  let selectedType = "games";
+
+  function selectType(type) {
+    selectedType = type;
+    document.querySelectorAll(".option-card").forEach((c) => {
+      c.classList.toggle("active", c.dataset.type === type);
+    });
+    document.getElementById("games-input").style.display = type === "games" ? "block" : "none";
+    document.getElementById("wins-input").style.display = type === "wins" ? "block" : "none";
+    document.getElementById("time-input").style.display = type === "time" ? "block" : "none";
+  }
+
+  document.querySelectorAll(".option-card").forEach((c) => {
+    c.addEventListener("click", () => selectType(c.dataset.type));
+  });
+
+  async function boot() {
+    renderBrand("squad setup");
+    await Store.init();
+    document.getElementById("syncDot").classList.toggle("local", Store.backend.mode === "local");
+    document.getElementById("syncLabel").textContent =
+      Store.backend.mode === "sheets" ? "synced via Google Sheets" : "local-only mode (set sheetsWebAppUrl to sync across phones)";
+
+    const s = Store.state;
+    s.players.forEach((p, i) => {
+      document.getElementById(`name${i + 1}`).value = p.name;
+    });
+    selectType(s.meta.endCondition.type || "games");
+    if (s.meta.endCondition.value) {
+      if (s.meta.endCondition.type === "games") document.getElementById("gamesVal").value = s.meta.endCondition.value;
+      if (s.meta.endCondition.type === "wins") document.getElementById("winsVal").value = s.meta.endCondition.value;
+    }
+  }
+
+  document.getElementById("startBtn").addEventListener("click", async () => {
+    const names = [1, 2, 3, 4].map((i) => document.getElementById(`name${i}`).value);
+    await Store.setPlayerNames(names);
+
+    let value = null, endTimestamp = null;
+    if (selectedType === "games") value = parseInt(document.getElementById("gamesVal").value, 10) || 10;
+    if (selectedType === "wins") value = parseInt(document.getElementById("winsVal").value, 10) || 3;
+    if (selectedType === "time") {
+      const v = document.getElementById("timeVal").value;
+      if (!v) {
+        document.getElementById("warn-msg").textContent = "Pick an end date/time first.";
+        document.getElementById("warn-msg").className = "banner warn";
+        return;
+      }
+      endTimestamp = new Date(v).getTime();
+    }
+    await Store.setEndCondition(selectedType, value, endTimestamp);
+    await Store.startGame();
+    window.location.href = "index.html";
+  });
+
+  boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fortnite Survivor</title>
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  /* ---- punishment ceremony ---- */
+  .punishment-wrap {
+    margin-bottom: 24px;
+  }
+  .punishment-stage {
+    border-radius: var(--radius);
+    border: 2px solid var(--ember);
+    background: linear-gradient(165deg, rgba(153,27,27,0.28), rgba(5,11,32,0.82));
+    padding: 32px 24px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .punishment-stage::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent 0 18px,
+      rgba(255,107,26,0.04) 18px 20px
+    );
+    pointer-events: none;
+  }
+  .ps-over {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 7vw, 48px);
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(255,107,26,0.6);
+    margin: 0 0 4px;
+  }
+  .ps-loser {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--sand);
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+  }
+  .ps-votes {
+    display: inline-block;
+    background: rgba(255,107,26,0.18);
+    border: 1px solid var(--ember);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ember);
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+  }
+  /* scratch card reveal */
+  .reveal-btn {
+    font-family: var(--font-display);
+    font-size: 18px;
+    padding: 18px 32px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--ember-deep), var(--ember), var(--gold));
+    background-size: 200% 200%;
+    color: var(--ink);
+    box-shadow: 0 8px 28px -8px rgba(255,107,26,0.75);
+    animation: shimmer 2.4s ease infinite;
+    letter-spacing: 1px;
+  }
+  @keyframes shimmer {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .reveal-btn:hover { transform: scale(1.03); }
+  /* punishment card */
+  .punishment-card {
+    display: none;
+    margin-top: 20px;
+    border-radius: var(--radius);
+    border: 2px solid var(--gold);
+    background: linear-gradient(165deg, rgba(245,197,24,0.1), rgba(5,11,32,0.88));
+    padding: 28px 20px 24px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  .punishment-card.show { display: block; }
+  @keyframes popIn {
+    0%   { opacity: 0; transform: scale(0.8) translateY(12px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .pc-emoji  { font-size: 56px; margin-bottom: 8px; line-height: 1; }
+  .pc-title  { font-family: var(--font-display); font-size: clamp(22px,5vw,34px); color: var(--gold); margin: 0 0 10px; }
+  .pc-desc   { font-size: 15px; line-height: 1.55; color: var(--sand); max-width: 420px; margin: 0 auto; }
+  .pc-stamp  { margin-top: 18px; font-family: var(--font-mono); font-size: 11px;
+               letter-spacing: 2px; text-transform: uppercase; color: var(--ember); }
+  /* kill board */
+  .kill-board { margin-top: 24px; text-align: left; }
+  .kill-board-title {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--sand-dim); margin-bottom: 12px; text-align: center;
+  }
+  .kill-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 14px; border-radius: 10px; margin-bottom: 6px;
+    background: rgba(244,233,216,0.05); border: 1px solid rgba(244,233,216,0.1);
+  }
+  .kill-row.top { background: rgba(255,201,60,0.1); border-color: rgba(255,201,60,0.3); }
+  .kill-row .kr-name { font-family: var(--font-body); font-size: 14px; font-weight: 600; }
+  .kill-row .kr-kills {
+    font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gold);
+  }
+  .kill-row .kr-label { font-family: var(--font-mono); font-size: 10px; color: var(--sand-dim); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="brand-slot"></div>
+
+  <div id="not-started" style="display:none; text-align:center;">
+    <div class="panel">
+      <h2>No game running</h2>
+      <p style="font-size:14px; color:var(--sand-dim);">Set your squad and house rules to kick things off.</p>
+      <a href="setup.html" class="btn" style="text-decoration:none; display:inline-block;">Set Up Game</a>
+    </div>
+  </div>
+
+  <div id="game-area" style="display:none;">
+    <div class="status-bar" id="status-bar"></div>
+
+    <div id="loser-area"></div>
+
+    <div class="grid" id="player-grid"></div>
+
+    <div class="btn-row" id="action-row"></div>
+
+    <div class="panel" id="round-panel" style="display:none;">
+      <h2>This round</h2>
+      <div id="round-status"></div>
+      <div class="divider"></div>
+      <h3>Who got the Victory Royale? (optional)</h3>
+      <div id="winner-picker"></div>
+    </div>
+
+    <div class="footer-nav">
+      <a href="setup.html">⚙ Edit setup / new game</a>
+      <span id="syncLabel"></span>
+    </div>
+  </div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/brand.js"></script>
+<script>
+  function flameHeight(votes) {
+    return Math.min(18 + votes * 6, 70);
+  }
+
+  function render() {
+    const s = Store.state;
+    document.getElementById("syncLabel").textContent =
+      Store.backend.mode === "sheets" ? "● synced" : "● local-only";
+
+    if (!s.meta.started) {
+      document.getElementById("not-started").style.display = "block";
+      document.getElementById("game-area").style.display = "none";
+      return;
+    }
+    document.getElementById("not-started").style.display = "none";
+    document.getElementById("game-area").style.display = "block";
+
+    // status bar
+    const cond = s.meta.endCondition;
+    let condLabel = "";
+    if (cond.type === "games") condLabel = `Round <b>${s.meta.round}</b> of <b>${cond.value}</b>`;
+    if (cond.type === "wins") condLabel = `First to <b>${cond.value}</b> wins`;
+    if (cond.type === "time") condLabel = `Ends <b>${new Date(s.meta.endTimestamp).toLocaleString()}</b>`;
+    if (cond.type === "manual") condLabel = `Playing until someone taps out`;
+    document.getElementById("status-bar").innerHTML = `
+      <div class="status-pill">🔥 ${condLabel}</div>
+      <div class="status-pill">Round <b>${s.meta.round}</b></div>
+    `;
+
+    // punishment ceremony
+    const loserArea = document.getElementById("loser-area");
+    if (s.meta.finished) {
+      const loser = Store.loser();
+      const p = s.meta.punishment;
+      const revealed = s.meta.punishmentRevealed;
+
+      loserArea.innerHTML = `
+        <div class="punishment-wrap">
+          <div class="punishment-stage">
+            <div class="ps-over">🏝️ GAME OVER</div>
+            <div class="ps-loser">${loser.name} had the most votes</div>
+            <div class="ps-votes">🔥 ${loser.totalVotes} votes against them</div>
+
+            ${!revealed ? `
+              <div style="margin-top:4px;">
+                <div style="font-family:var(--font-mono);font-size:12px;color:var(--sand-dim);margin-bottom:16px;">
+                  Their punishment has been sealed. Hit the button to find out.
+                </div>
+                <button class="reveal-btn" id="revealBtn">
+                  🔥 Reveal Punishment 🔥
+                </button>
+              </div>
+            ` : ``}
+
+            ${revealed && p ? `
+              <div class="punishment-card show">
+                <div class="pc-emoji">${p.emoji}</div>
+                <div class="pc-title">${p.title}</div>
+                <div class="pc-desc">${p.desc}</div>
+                <div class="pc-stamp">⚖️ The jury has spoken ⚖️</div>
+              </div>
+              <div class="kill-board">
+                <div class="kill-board-title">🔪 Final Kill Board (revealed)</div>
+                ${[...s.players].sort((a,b) => (b.totalKills||0)-(a.totalKills||0)).map((pl,i) => `
+                  <div class="kill-row ${i===0 ? 'top' : ''}">
+                    <div>
+                      <div class="kr-name">${i===0 ? '🏆 ' : ''}${pl.name}</div>
+                      <div class="kr-label">${pl.totalVotes} votes against</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div class="kr-kills">${pl.totalKills||0}</div>
+                      <div class="kr-label">kills</div>
+                    </div>
+                  </div>`).join('')}
+              </div>
+            ` : ``}
+          </div>
+        </div>`;
+
+      const revealBtn = document.getElementById("revealBtn");
+      if (revealBtn) {
+        revealBtn.addEventListener("click", async () => {
+          revealBtn.textContent = "⏳ Deciding fate…";
+          revealBtn.disabled = true;
+          await Store.revealPunishment();
+        });
+      }
+    } else {
+      loserArea.innerHTML = "";
+    }
+
+    // player grid
+    const leaderVotes = Math.max(...s.players.map((p) => p.totalVotes));
+    document.getElementById("player-grid").innerHTML = s.players
+      .map((p) => {
+        const pendingCount = p.pendingDrinks.filter((d) => !d.done).length;
+        const isLeader = p.totalVotes === leaderVotes && leaderVotes > 0;
+        return `
+        <div class="card ${isLeader ? "leader" : ""}">
+          <div class="torch" style="--flame-h:${flameHeight(p.totalVotes)}px">
+            <div class="flame"></div>
+            <div class="stick"></div>
+          </div>
+          <div class="player-name">${p.name}</div>
+          <div class="player-votes">${p.totalVotes}</div>
+          <div class="player-stat">VOTES AGAINST &middot; ${p.wins} WIN${p.wins === 1 ? "" : "S"}</div>
+          <div class="player-pending">${pendingCount ? `${pendingCount} drink${pendingCount === 1 ? "" : "s"} still owed` : ""}</div>
+          <a class="card-link" href="player.html?id=${p.id}">Go to ${p.name.split(" ")[0]}'s screen →</a>
+        </div>`;
+      })
+      .join("");
+
+    // round panel — who has submitted
+    const panel = document.getElementById("round-panel");
+    if (!s.meta.finished) {
+      panel.style.display = "block";
+      // Kill counts are hidden until end — only show submission status
+      document.getElementById("round-status").innerHTML = s.players
+        .map((p) => {
+          let stateLabel = "waiting to submit";
+          if (p.roundKills !== null && !p.roundDistributed) stateLabel = "choosing drinks to hand out";
+          if (p.roundDistributed) stateLabel = "✓ drinks handed out";
+          return `<div class="checklist-item ${p.roundDistributed ? "done" : ""}">
+            <span style="width:10px;height:10px;border-radius:50%;background:${p.roundDistributed ? "var(--green-bright)" : "var(--ember)"};"></span>
+            <span class="ci-text">${p.name}: ${stateLabel}</span>
+          </div>`;
+        })
+        .join("");
+      document.getElementById("winner-picker").innerHTML = s.players
+        .map((p) => `<button class="btn secondary" data-winner="${p.id}" style="${s.meta.roundWinner === p.id ? "border-color:var(--gold);color:var(--gold);" : ""}">${p.name}${s.meta.roundWinner === p.id ? " ✓" : ""}</button>`)
+        .join(" ");
+      document.querySelectorAll("[data-winner]").forEach((b) => {
+        b.addEventListener("click", async () => {
+          const id = parseInt(b.dataset.winner, 10);
+          await Store.setRoundWinner(s.meta.roundWinner === id ? null : id);
+        });
+      });
+    } else {
+      panel.style.display = "none";
+    }
+
+    // action row
+    const actionRow = document.getElementById("action-row");
+    let html = "";
+    if (!s.meta.finished) {
+      if (Store.allSubmitted()) {
+        html += `<button class="btn" id="closeRoundBtn">Close Round & Start Next →</button>`;
+      }
+      html += `<button class="btn danger" id="endGameBtn">End Game Now</button>`;
+    } else {
+      html += `<button class="btn" id="newGameBtn">Start New Game</button>`;
+    }
+    actionRow.innerHTML = html;
+
+    const closeBtn = document.getElementById("closeRoundBtn");
+    if (closeBtn) closeBtn.addEventListener("click", async () => { await Store.closeRound(); });
+    const endBtn = document.getElementById("endGameBtn");
+    if (endBtn) endBtn.addEventListener("click", async () => {
+      if (confirm("End the game now and crown today's loser?")) await Store.endGameNow();
+    });
+    const newBtn = document.getElementById("newGameBtn");
+    if (newBtn) newBtn.addEventListener("click", () => { window.location.href = "setup.html"; });
+  }
+
+  async function boot() {
+    renderBrand("the dashboard");
+    Store.onChange(render);
+    await Store.init();
+    render();
+  }
+  boot();
+</script>
+</body>
+</html>

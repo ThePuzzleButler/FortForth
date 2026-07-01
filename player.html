@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Screen — Fortnite Survivor</title>
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  /* password gate */
+  .lock-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .lock-card {
+    background: linear-gradient(165deg, var(--bg-card), var(--bg-mid));
+    border: 1px solid rgba(255,201,60,0.15);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 340px;
+    box-shadow: 0 16px 40px -12px rgba(0,0,0,0.7);
+  }
+  .lock-icon {
+    font-size: 44px;
+    margin-bottom: 8px;
+  }
+  .lock-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--gold);
+    margin: 0 0 4px;
+  }
+  .lock-sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--sand-dim);
+    letter-spacing: 1px;
+    margin-bottom: 22px;
+  }
+  .lock-input {
+    width: 100%;
+    background: rgba(244,233,216,0.07);
+    border: 2px solid rgba(244,233,216,0.2);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    color: var(--sand);
+    font-family: var(--font-mono);
+    font-size: 20px;
+    text-align: center;
+    letter-spacing: 4px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+  .lock-input:focus { outline: none; border-color: var(--green-bright); }
+  .lock-input.shake {
+    animation: shake 0.4s ease;
+    border-color: var(--ember-deep);
+  }
+  @keyframes shake {
+    0%,100%{ transform:translateX(0); }
+    20%    { transform:translateX(-8px); }
+    40%    { transform:translateX(8px); }
+    60%    { transform:translateX(-5px); }
+    80%    { transform:translateX(5px); }
+  }
+  .lock-error {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ember);
+    min-height: 18px;
+    margin-bottom: 4px;
+  }
+  .player-select-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .player-btn {
+    background: rgba(244,233,216,0.05);
+    border: 2px solid rgba(244,233,216,0.15);
+    border-radius: var(--radius-sm);
+    padding: 14px 8px;
+    color: var(--sand);
+    font-family: var(--font-display);
+    font-size: 16px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .player-btn:hover { background: rgba(74,144,226,0.12); border-color: var(--green-bright); }
+  .player-btn.selected { border-color: var(--ember); background: rgba(220,38,38,0.14); color: #ffffff; }
+</style>
+</head>
+<body>
+<div id="lock-view" class="lock-screen">
+  <div id="brand-slot" style="margin-bottom:20px;"></div>
+  <div class="lock-card">
+    <!-- Step 1: pick a player -->
+    <div id="step-pick">
+      <div class="lock-icon">🏝️</div>
+      <div class="lock-title">Whose screen?</div>
+      <div class="lock-sub">TAP YOUR NAME</div>
+      <div class="player-select-grid" id="player-btns"></div>
+    </div>
+
+    <!-- Step 2: enter password -->
+    <div id="step-pass" style="display:none;">
+      <div class="lock-icon">🔒</div>
+      <div class="lock-title" id="pass-greeting">Enter your password</div>
+      <div class="lock-sub">KEEP IT TO YOURSELF</div>
+      <input class="lock-input" type="password" id="passInput" placeholder="••••••" autocomplete="off" />
+      <div class="lock-error" id="passError"></div>
+      <button class="btn" id="unlockBtn" style="width:100%;margin-top:6px;">Unlock →</button>
+      <button class="btn secondary" id="backBtn" style="width:100%;margin-top:10px;">← Change player</button>
+    </div>
+  </div>
+</div>
+
+<div id="player-area" style="display:none;">
+  <div class="wrap">
+    <div id="brand-slot-inner"></div>
+
+    <div class="status-bar" id="who-bar"></div>
+
+    <div class="panel">
+      <h2>🤫 Your secret missions</h2>
+      <p style="font-size:12px;color:var(--sand-dim);margin-top:-6px;">
+        Only you can see this list. Pull one off and you get to slip 3 votes onto someone — they get a shot and no one knows it came from you.
+      </p>
+      <div id="mission-set-banner" style="display:none; text-align:center; margin-bottom:14px; padding:10px 14px; border-radius:10px; background:rgba(139,197,63,0.15); border:1px solid rgba(139,197,63,0.35); font-family:var(--font-mono); font-size:12px; color:var(--green-bright); letter-spacing:0.5px;"></div>
+      <div id="mission-list"></div>
+    </div>
+
+    <div class="panel" id="kills-panel">
+      <h2>This round's kills</h2>
+      <div id="kills-form"></div>
+    </div>
+
+    <div class="panel" id="drinks-owed-panel">
+      <h2>Drinks you still owe</h2>
+      <div id="drinks-owed-list"></div>
+    </div>
+
+    <div class="btn-row">
+      <a href="index.html" class="btn secondary" style="text-decoration:none; display:inline-flex; align-items:center;">← Dashboard</a>
+      <button class="btn secondary" id="lockBtn">🔒 Lock screen</button>
+    </div>
+  </div>
+</div>
+
+<!-- target picker modal -->
+<div id="target-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:10; align-items:center; justify-content:center;">
+  <div class="panel" style="max-width:360px; width:90%; position:relative; z-index:11;">
+    <h3 id="modal-title">Who gets the shot?</h3>
+    <p id="modal-desc" style="font-size:12px;color:var(--sand-dim);margin-top:-4px;margin-bottom:14px;"></p>
+    <div id="target-options"></div>
+    <button class="btn secondary" id="modal-cancel" style="margin-top:4px; width:100%;">Cancel</button>
+  </div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/brand.js"></script>
+<script>
+  const cfg = window.SURVIVOR_CONFIG || {};
+  const passwords = cfg.passwords || {};
+  const SESSION_KEY = "survivorUnlocked";
+
+  let myId = null;
+  let pendingMissionId = null;
+
+  // ── password gate ──────────────────────────────────────────────────
+  function initLock() {
+    renderBrand("private screen");
+    const btns = document.getElementById("player-btns");
+    btns.innerHTML = "";
+
+    // Build name list from state if available, else defaults
+    const names = Store.state && Store.state.players
+      ? Store.state.players.map(p => p.name)
+      : ["Brock","Tyler","Aldo","Danny"];
+
+    names.forEach((name, i) => {
+      const id = i + 1;
+      const b = document.createElement("button");
+      b.className = "player-btn";
+      b.textContent = name;
+      b.dataset.id = id;
+      b.addEventListener("click", () => selectPlayer(id, name));
+      btns.appendChild(b);
+    });
+  }
+
+  function selectPlayer(id, name) {
+    myId = id;
+    document.querySelectorAll(".player-btn").forEach(b => b.classList.toggle("selected", parseInt(b.dataset.id) === id));
+    document.getElementById("step-pick").style.display = "none";
+    document.getElementById("step-pass").style.display = "block";
+    document.getElementById("pass-greeting").textContent = `Hey ${name} 👋`;
+    document.getElementById("passInput").value = "";
+    document.getElementById("passError").textContent = "";
+    setTimeout(() => document.getElementById("passInput").focus(), 60);
+  }
+
+  function tryUnlock() {
+    const input = document.getElementById("passInput").value.trim().toLowerCase();
+    const correct = (passwords[myId] || "").toLowerCase();
+    if (input === correct) {
+      sessionStorage.setItem(SESSION_KEY, String(myId));
+      showPlayerScreen();
+    } else {
+      const inp = document.getElementById("passInput");
+      inp.classList.add("shake");
+      document.getElementById("passError").textContent = "Wrong password — try again";
+      inp.value = "";
+      setTimeout(() => inp.classList.remove("shake"), 500);
+    }
+  }
+
+  document.getElementById("unlockBtn").addEventListener("click", tryUnlock);
+  document.getElementById("passInput").addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+  document.getElementById("backBtn").addEventListener("click", () => {
+    document.getElementById("step-pass").style.display = "none";
+    document.getElementById("step-pick").style.display = "block";
+    myId = null;
+  });
+  document.getElementById("lockBtn").addEventListener("click", () => {
+    sessionStorage.removeItem(SESSION_KEY);
+    document.getElementById("player-area").style.display = "none";
+    document.getElementById("lock-view").style.display = "flex";
+    document.getElementById("step-pass").style.display = "none";
+    document.getElementById("step-pick").style.display = "block";
+    myId = null;
+  });
+
+  // ── main player screen ─────────────────────────────────────────────
+  function showPlayerScreen() {
+    document.getElementById("lock-view").style.display = "none";
+    document.getElementById("player-area").style.display = "block";
+    renderBrand("private screen");
+    document.getElementById("brand-slot-inner").appendChild(
+      document.getElementById("brand-slot").firstElementChild
+    );
+    Store.onChange(render);
+    render();
+  }
+
+  // ── mission target modal ───────────────────────────────────────────
+  function openTargetModal(missionId) {
+    pendingMissionId = missionId;
+    const mission = Store.state.players.find(p => p.id === myId).missions.find(m => m.id === missionId);
+    const others = Store.state.players.filter(p => p.id !== myId);
+    document.getElementById("modal-title").textContent = "Who gets the shot? 🥃";
+    document.getElementById("modal-desc").textContent = mission.chooseTarget
+      ? "You earned the pick — send 3 votes wherever you want."
+      : "Assign the shot to whoever you did it to.";
+    document.getElementById("target-options").innerHTML = others
+      .map(p => `<button class="btn secondary" style="width:100%;margin-bottom:8px;" data-target="${p.id}">${p.name}</button>`)
+      .join("");
+    document.querySelectorAll("#target-options button").forEach(b => {
+      b.addEventListener("click", async () => {
+        await Store.completeMission(myId, pendingMissionId, parseInt(b.dataset.target));
+        document.getElementById("target-modal").style.display = "none";
+      });
+    });
+    document.getElementById("target-modal").style.display = "flex";
+  }
+  document.getElementById("modal-cancel").addEventListener("click", () => {
+    document.getElementById("target-modal").style.display = "none";
+  });
+
+  // ── render ─────────────────────────────────────────────────────────
+  function render() {
+    const s = Store.state;
+    if (!s.meta.started) {
+      document.getElementById("kills-panel").style.display = "none";
+      document.getElementById("drinks-owed-panel").style.display = "none";
+      document.getElementById("who-bar").innerHTML = `<div class="status-pill">⏳ No game running yet — <a href="setup.html" style="color:var(--gold)">go to setup</a></div>`;
+      document.getElementById("mission-list").innerHTML = `<p style="font-size:13px;color:var(--sand-dim);">Start a game from Setup to see your missions.</p>`;
+      return;
+    }
+
+    const me = s.players.find(p => p.id === myId);
+    if (!me) return;
+
+    document.getElementById("who-bar").innerHTML = `
+      <div class="status-pill">👤 <b>${me.name}</b></div>
+      <div class="status-pill">Round <b>${s.meta.round}</b></div>
+      <div class="status-pill">${me.totalVotes} votes against you 🔥</div>
+    `;
+
+    // missions
+    document.getElementById("mission-list").innerHTML = me.missions.map(m => `
+      <div class="mission ${m.completed ? "done" : ""}">
+        <div class="mission-check" data-mission="${m.id}" style="cursor:${m.completed ? "default" : "pointer"}">
+          ${m.completed ? "✓" : ""}
+        </div>
+        <div>
+          <div class="mission-text">${m.text}</div>
+          ${m.completed
+            ? `<div class="mission-tag">✅ Slipped to ${s.players.find(p => p.id === m.target)?.name || "?"} — +3 votes</div>`
+            : `<div class="mission-tag" style="color:var(--sand-dim)">Tap ✓ when you pull it off</div>`}
+        </div>
+      </div>`).join("");
+
+    document.querySelectorAll(".mission-check").forEach(el => {
+      el.addEventListener("click", () => {
+        const m = me.missions.find(m => m.id === el.dataset.mission);
+        if (m && !m.completed) openTargetModal(m.id);
+      });
+    });
+
+    // Mission set banner — shows when player has completed a full set and gotten new ones
+    const setCount = me.missionSetCount || 1;
+    const allCurrentDone = me.missions.every(m => m.completed);
+    const banner = document.getElementById("mission-set-banner");
+    if (banner) {
+      if (setCount > 1 && !allCurrentDone) {
+        banner.style.display = "block";
+        banner.textContent = `✨ Set ${setCount} unlocked! You crushed the last three. Keep going.`;
+      } else if (allCurrentDone && !s.meta.finished) {
+        banner.style.display = "block";
+        banner.textContent = "⏳ Completing final mission… new set on its way!";
+      } else {
+        banner.style.display = "none";
+      }
+    }
+
+    // kills panel
+    const killsPanel = document.getElementById("kills-form");
+    if (s.meta.finished) {
+      document.getElementById("kills-panel").style.display = "none";
+    } else {
+      document.getElementById("kills-panel").style.display = "block";
+      if (me.roundKills === null) {
+        killsPanel.innerHTML = `
+          <label for="killsInput">How many kills did you get this round?</label>
+          <input type="number" id="killsInput" min="0" value="0" style="font-size:28px;text-align:center;padding:16px;" />
+          <button class="btn" id="submitKillsBtn" style="width:100%;margin-top:4px;">Lock In Kills</button>
+        `;
+        document.getElementById("submitKillsBtn").addEventListener("click", async () => {
+          const val = parseInt(document.getElementById("killsInput").value, 10) || 0;
+          await Store.submitKills(myId, val);
+        });
+      } else if (!me.roundDistributed) {
+        const others = s.players.filter(p => p.id !== myId);
+        const total = Store.allocatedTotal(me);
+        killsPanel.innerHTML = `
+          <p style="font-size:13px;color:var(--sand-dim);">
+            You got <b style="color:var(--gold);font-size:18px;">${me.roundKills}</b> kills — hand out exactly that many drinks.
+          </p>
+          ${me.roundKills === 0
+            ? `<p style="font-size:13px;color:var(--green-bright);">No kills, nothing to hand out.</p>`
+            : others.map(p => `
+              <div class="alloc-row">
+                <div class="name">${p.name}</div>
+                <div class="stepper">
+                  <button data-target="${p.id}" data-dir="-1">−</button>
+                  <span id="alloc-${p.id}">${me.allocations[p.id] || 0}</span>
+                  <button data-target="${p.id}" data-dir="1">+</button>
+                </div>
+              </div>`).join("")}
+          <div class="banner ${total === me.roundKills ? "good" : "warn"}">
+            ${total} / ${me.roundKills} drinks assigned
+          </div>
+          <button class="btn" id="confirmAllocBtn" style="width:100%;" ${total === me.roundKills ? "" : "disabled"}>
+            Confirm — Hand Out Drinks 🍺
+          </button>
+        `;
+        document.querySelectorAll(".stepper button").forEach(b => {
+          b.addEventListener("click", async () => {
+            const targetId = parseInt(b.dataset.target);
+            const dir = parseInt(b.dataset.dir);
+            const current = me.allocations[targetId] || 0;
+            await Store.setAllocation(myId, targetId, Math.max(0, current + dir));
+          });
+        });
+        const confirmBtn = document.getElementById("confirmAllocBtn");
+        if (confirmBtn) confirmBtn.addEventListener("click", async () => {
+          const ok = await Store.confirmDistribution(myId);
+          if (!ok) alert("Assign exactly as many drinks as your kills first.");
+        });
+      } else {
+        killsPanel.innerHTML = `<p style="font-size:13px;color:var(--green-bright);">✓ ${me.roundKills} kills reported and drinks handed out. Waiting on the squad…</p>`;
+      }
+    }
+
+    // drinks owed
+    const owed = me.pendingDrinks.filter(d => !d.done);
+    const cleared = me.pendingDrinks.filter(d => d.done);
+    document.getElementById("drinks-owed-list").innerHTML =
+      (owed.length === 0 && cleared.length === 0)
+        ? `<p style="font-size:13px;color:var(--sand-dim);">Nothing owed yet — you're clean 🌴</p>`
+        : [...owed, ...cleared].map(d => `
+          <div class="checklist-item ${d.done ? "done" : ""}">
+            <input type="checkbox" data-drink="${d.id}" ${d.done ? "checked" : ""}/>
+            <span class="ci-text">
+              ${d.count} drink${d.count > 1 ? "s" : ""} from <b>${d.fromName}</b>
+              (round ${d.round})${d.note ? ` — ${d.note}` : ""}
+            </span>
+          </div>`).join("");
+    document.querySelectorAll("[data-drink]").forEach(cb => {
+      cb.addEventListener("change", async () => Store.toggleDrinkDone(myId, cb.dataset.drink));
+    });
+  }
+
+  // ── boot ───────────────────────────────────────────────────────────
+  async function boot() {
+    renderBrand("private screen");
+    await Store.init();
+
+    // Check if already unlocked this session
+    const saved = parseInt(sessionStorage.getItem(SESSION_KEY));
+    if (saved && saved >= 1 && saved <= 4) {
+      myId = saved;
+      showPlayerScreen();
+    } else {
+      initLock();
+    }
+  }
+
+  boot();
+</script>
+</body>
+</html>
