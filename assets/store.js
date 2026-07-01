@@ -38,7 +38,7 @@ const MISSION_POOL = [
 const PUNISHMENTS = [
   { id: "40hands", emoji: "💪", title: "Edward 40 Hands",      desc: "Two 40s taped to your hands. Tomorrow. You can’t put them down until they’re both empty. No bathroom breaks until it’s done." },
   { id: "loko",    emoji: "🍺", title: "Shotgun a 4 Loko",     desc: "Full can of 4 Loko, shotgunned. Tomorrow. Pick your flavour wisely because you’re finishing it." },
-  { id: "edible",  emoji: "🟢", title: "100mg Edible Soda",    desc: "100mg edible mixed into a soda of the group’s choosing. Tomorrow. Enjoy the ride." },
+  { id: "edible",  emoji: "🟢", title: "100mg Edible Soda",    desc: "100mg edible soda of the group’s choosing. Tomorrow. Enjoy the ride." },
   { id: "nudie",   emoji: "🏃", title: "Nudie Run",             desc: "Naked lap. Full sprint around the block. Everyone comes outside to watch. No skipping." },
 ];
 
