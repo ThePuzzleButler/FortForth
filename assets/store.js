@@ -15,6 +15,7 @@
 const MISSION_POOL = [
   // IRL social missions
   { text: "Pants somebody — that person takes a shot 🧲",                                      chooseTarget: false },
+   { text: "Pants somebody — that person takes a shot 🧲",                                      chooseTarget: false },
   { text: "Get someone to try your drink — that person takes a shot 🍺",                      chooseTarget: false },
   { text: "Convince someone to touch the floor — that person takes a shot 🙇",                chooseTarget: false },
   { text: "Give up a Golden Gun to another player — that person takes a shot 🔫",             chooseTarget: false },
