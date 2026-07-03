@@ -15,7 +15,6 @@
 const MISSION_POOL = [
   // IRL social missions
   { text: "Pants somebody — that person takes a shot 🧲",                                      chooseTarget: false },
-   { text: "Pants somebody — that person takes a shot 🧲",                                      chooseTarget: false },
   { text: "Get someone to try your drink — that person takes a shot 🍺",                      chooseTarget: false },
   { text: "Convince someone to touch the floor — that person takes a shot 🙇",                chooseTarget: false },
   { text: "Give up a Golden Gun to another player — that person takes a shot 🔫",             chooseTarget: false },
@@ -39,7 +38,7 @@ const MISSION_POOL = [
 const PUNISHMENTS = [
   { id: "40hands", emoji: "💪", title: "Edward 40 Hands",      desc: "Two 40s taped to your hands. Tomorrow. You can’t put them down until they’re both empty. No bathroom breaks until it’s done." },
   { id: "loko",    emoji: "🍺", title: "Shotgun a 4 Loko",     desc: "Full can of 4 Loko, shotgunned. Tomorrow. Pick your flavour wisely because you’re finishing it." },
-  { id: "edible",  emoji: "🟢", title: "100mg Edible Soda",    desc: "100mg edible soda of the group’s choosing. Tomorrow. Enjoy the ride." },
+  { id: "edible",  emoji: "🟢", title: "100mg Edible Soda",    desc: "100mg edible mixed into a soda of the group’s choosing. Tomorrow. Enjoy the ride." },
   { id: "nudie",   emoji: "🏃", title: "Nudie Run",             desc: "Naked lap. Full sprint around the block. Everyone comes outside to watch. No skipping." },
 ];
 
@@ -204,6 +203,57 @@ const Store = {
     this.state.meta.endCondition = { type, value: value || null };
     this.state.meta.endTimestamp = endTimestamp || null;
     await this.commit();
+  },
+
+  /* ---- single-commit setup + start (used by setup.html to avoid race conditions) ---- */
+  async setupAndStart(names, endType, endValue, endTimestamp) {
+    // Apply names
+    names.forEach((n, i) => {
+      if (n && n.trim()) this.state.players[i].name = n.trim();
+    });
+    // Apply end condition
+    this.state.meta.endCondition = { type: endType, value: endValue || null };
+    this.state.meta.endTimestamp = endTimestamp || null;
+    // Apply start
+    this.state.meta.started = true;
+    this.state.meta.finished = false;
+    this.state.meta.round = 1;
+    this.state.meta.roundWinner = null;
+    this.state.meta.punishment = null;
+    this.state.meta.punishmentRevealed = false;
+    this.state.players.forEach((p) => {
+      p.totalVotes = 0;
+      p.totalKills = 0;
+      p.wins = 0;
+      p.roundKills = null;
+      p.roundDistributed = false;
+      p.allocations = {};
+      p.pendingDrinks = [];
+      p.missionSetCount = 1;
+      p.seenMissions = [];
+      p.missions = pickMissions(3, []);
+      p.seenMissions = p.missions.map((m) => m.text);
+    });
+    this.state.history = [];
+
+    // Single commit — one POST to the sheet
+    await this.commit();
+
+    // For sheets backend, verify the write landed before the caller redirects
+    if (this.backend.mode === "sheets") {
+      let attempts = 0;
+      while (attempts < 4) {
+        await new Promise((r) => setTimeout(r, 700));
+        try {
+          const check = await this.backend.load();
+          if (check && check.meta && check.meta.started) return true; // confirmed
+        } catch (_) {}
+        // Write may not have landed yet — try once more
+        if (attempts === 1) await this.commit();
+        attempts++;
+      }
+    }
+    return true;
   },
 
   async startGame() {
