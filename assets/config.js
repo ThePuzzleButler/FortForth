@@ -6,5 +6,5 @@ window.SURVIVOR_CONFIG = {
     3: "danny",
     4: "aldo",
   },
-  sheetsWebAppUrl: "",
+  sheetsWebAppUrl: "https://script.google.com/macros/s/AKfycbyOyDtPYCXoLvUpiQoeGS_n2biKu3ZhoGCDRn7fQhF2ta4T8fUtKwwx1nf9DNbOBbALSw/exec",
 };
