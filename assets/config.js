@@ -1,25 +1,10 @@
-/* ============================================================
-   FORTNITE SURVIVOR — config.js
-
-   PASSWORDS: Change these before game night. Each player uses
-   their own password to unlock their private screen.
-
-   SHEETS SYNC: Paste the Apps Script Web App URL here to enable
-   live cross-device sync (see README.md Step 2).
-   ============================================================ */
-
 window.SURVIVOR_CONFIG = {
-
-  // Each player's private password — change to anything you want.
+  // Passwords match the new player order: Brock(1) Tyler(2) Danny(3) Aldo(4)
   passwords: {
-    1: "brock",   // Player 1 → Brock
-    2: "tyler",   // Player 2 → Tyler
-    3: "aldo",    // Player 3 → Aldo
-    4: "danny",   // Player 4 → Danny
+    1: "brock",
+    2: "tyler",
+    3: "danny",
+    4: "aldo",
   },
-
-  // Leave blank for local-only mode, or paste your Apps Script URL:
-  // sheetsWebAppUrl: "https://script.google.com/macros/s/AKfycbzsrUOYVxiixQSI_4a4xNeK7IhG3TXCnCyoXvprvIaNTjDwMa2klCOiysVTy697od-5jg/exec",
-  sheetsWebAppUrl: "https://script.google.com/macros/s/AKfycbzsrUOYVxiixQSI_4a4xNeK7IhG3TXCnCyoXvprvIaNTjDwMa2klCOiysVTy697od-5jg/exec",
-
+  sheetsWebAppUrl: "",
 };

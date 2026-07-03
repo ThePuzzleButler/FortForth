@@ -7,9 +7,7 @@
 <link rel="stylesheet" href="assets/style.css" />
 <style>
   /* ---- punishment ceremony ---- */
-  .punishment-wrap {
-    margin-bottom: 24px;
-  }
+  .punishment-wrap { margin-bottom: 24px; }
   .punishment-stage {
     border-radius: var(--radius);
     border: 2px solid var(--ember);
@@ -22,132 +20,82 @@
   .punishment-stage::before {
     content: "";
     position: absolute; inset: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent 0 18px,
-      rgba(255,107,26,0.04) 18px 20px
-    );
+    background: repeating-linear-gradient(45deg, transparent 0 18px, rgba(220,38,38,0.04) 18px 20px);
     pointer-events: none;
   }
-  .ps-over {
-    font-family: var(--font-display);
-    font-size: clamp(28px, 7vw, 48px);
-    color: var(--gold);
-    text-shadow: 0 0 30px rgba(255,107,26,0.6);
-    margin: 0 0 4px;
-  }
-  .ps-loser {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    color: var(--sand);
-    letter-spacing: 1px;
-    margin-bottom: 24px;
-  }
-  .ps-votes {
-    display: inline-block;
-    background: rgba(255,107,26,0.18);
-    border: 1px solid var(--ember);
-    border-radius: 999px;
-    padding: 4px 14px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--ember);
-    margin-bottom: 20px;
-    letter-spacing: 0.5px;
-  }
-  /* scratch card reveal */
+  .ps-over   { font-family: var(--font-display); font-size: clamp(28px,7vw,48px); color: var(--gold); text-shadow: 0 0 30px rgba(220,38,38,0.5); margin: 0 0 4px; }
+  .ps-loser  { font-family: var(--font-mono); font-size: 14px; color: var(--sand); letter-spacing: 1px; margin-bottom: 24px; }
+  .ps-votes  { display:inline-block; background: rgba(220,38,38,0.15); border: 1px solid var(--ember); border-radius: 999px; padding: 4px 14px; font-family: var(--font-mono); font-size: 12px; color: var(--ember); margin-bottom: 20px; letter-spacing: 0.5px; }
   .reveal-btn {
-    font-family: var(--font-display);
-    font-size: 18px;
-    padding: 18px 32px;
-    border-radius: var(--radius);
-    border: none;
-    cursor: pointer;
+    font-family: var(--font-display); font-size: 18px; padding: 18px 32px;
+    border-radius: var(--radius); border: none; cursor: pointer;
     background: linear-gradient(135deg, var(--ember-deep), var(--ember), var(--gold));
     background-size: 200% 200%;
-    color: var(--ink);
-    box-shadow: 0 8px 28px -8px rgba(255,107,26,0.75);
-    animation: shimmer 2.4s ease infinite;
-    letter-spacing: 1px;
+    color: var(--ink); box-shadow: 0 8px 28px -8px rgba(220,38,38,0.75);
+    animation: shimmer 2.4s ease infinite; letter-spacing: 1px;
   }
-  @keyframes shimmer {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+  @keyframes shimmer { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
   .reveal-btn:hover { transform: scale(1.03); }
-  /* punishment card */
   .punishment-card {
-    display: none;
-    margin-top: 20px;
-    border-radius: var(--radius);
-    border: 2px solid var(--gold);
+    display: none; margin-top: 20px;
+    border-radius: var(--radius); border: 2px solid var(--gold);
     background: linear-gradient(165deg, rgba(245,197,24,0.1), rgba(5,11,32,0.88));
     padding: 28px 20px 24px;
-    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
   }
   .punishment-card.show { display: block; }
-  @keyframes popIn {
-    0%   { opacity: 0; transform: scale(0.8) translateY(12px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-  }
-  .pc-emoji  { font-size: 56px; margin-bottom: 8px; line-height: 1; }
-  .pc-title  { font-family: var(--font-display); font-size: clamp(22px,5vw,34px); color: var(--gold); margin: 0 0 10px; }
-  .pc-desc   { font-size: 15px; line-height: 1.55; color: var(--sand); max-width: 420px; margin: 0 auto; }
-  .pc-stamp  { margin-top: 18px; font-family: var(--font-mono); font-size: 11px;
-               letter-spacing: 2px; text-transform: uppercase; color: var(--ember); }
+  @keyframes popIn { 0%{opacity:0;transform:scale(0.8) translateY(12px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+  .pc-emoji { font-size: 56px; margin-bottom: 8px; line-height: 1; }
+  .pc-title { font-family: var(--font-display); font-size: clamp(22px,5vw,34px); color: var(--gold); margin: 0 0 10px; }
+  .pc-desc  { font-size: 15px; line-height: 1.55; color: var(--sand); max-width: 420px; margin: 0 auto; }
+  .pc-stamp { margin-top: 18px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--ember); }
   /* kill board */
   .kill-board { margin-top: 24px; text-align: left; }
-  .kill-board-title {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px;
-    text-transform: uppercase; color: var(--sand-dim); margin-bottom: 12px; text-align: center;
-  }
-  .kill-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 9px 14px; border-radius: 10px; margin-bottom: 6px;
-    background: rgba(244,233,216,0.05); border: 1px solid rgba(244,233,216,0.1);
-  }
-  .kill-row.top { background: rgba(255,201,60,0.1); border-color: rgba(255,201,60,0.3); }
-  .kill-row .kr-name { font-family: var(--font-body); font-size: 14px; font-weight: 600; }
-  .kill-row .kr-kills {
-    font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gold);
-  }
+  .kill-board-title { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--sand-dim); margin-bottom: 12px; text-align: center; }
+  .kill-row { display:flex; align-items:center; justify-content:space-between; padding: 9px 14px; border-radius: 10px; margin-bottom: 6px; background: rgba(238,242,255,0.04); border: 1px solid rgba(74,144,226,0.12); }
+  .kill-row.top { background: rgba(245,197,24,0.08); border-color: rgba(245,197,24,0.3); }
+  .kill-row .kr-name  { font-family: var(--font-body); font-size: 14px; font-weight: 600; }
+  .kill-row .kr-kills { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gold); }
   .kill-row .kr-label { font-family: var(--font-mono); font-size: 10px; color: var(--sand-dim); }
+  /* loading overlay */
+  .init-overlay {
+    position: fixed; inset: 0; z-index: 99;
+    background: var(--bg-deep);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  }
+  .init-overlay p { font-family: var(--font-mono); font-size: 13px; color: var(--sand-dim); letter-spacing: 1px; }
+  .spinner { width: 36px; height: 36px; border: 3px solid rgba(74,144,226,0.2); border-top-color: var(--ember); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<div id="init-overlay" class="init-overlay">
+  <div class="spinner"></div>
+  <p id="init-msg">Loading…</p>
+</div>
+
+<div class="wrap" id="main-wrap" style="display:none;">
   <div id="brand-slot"></div>
 
-  <div id="not-started" style="display:none; text-align:center;">
-    <div class="panel">
-      <h2>No game running</h2>
-      <p style="font-size:14px; color:var(--sand-dim);">Set your squad and house rules to kick things off.</p>
-      <a href="setup.html" class="btn" style="text-decoration:none; display:inline-block;">Set Up Game</a>
-    </div>
+  <div class="status-bar" id="status-bar"></div>
+
+  <div id="loser-area"></div>
+
+  <div class="grid" id="player-grid"></div>
+
+  <div class="btn-row" id="action-row"></div>
+
+  <div class="panel" id="round-panel" style="display:none;">
+    <h2>This round</h2>
+    <div id="round-status"></div>
+    <div class="divider"></div>
+    <h3>Who got the Victory Royale? (optional)</h3>
+    <div id="winner-picker"></div>
   </div>
 
-  <div id="game-area" style="display:none;">
-    <div class="status-bar" id="status-bar"></div>
-
-    <div id="loser-area"></div>
-
-    <div class="grid" id="player-grid"></div>
-
-    <div class="btn-row" id="action-row"></div>
-
-    <div class="panel" id="round-panel" style="display:none;">
-      <h2>This round</h2>
-      <div id="round-status"></div>
-      <div class="divider"></div>
-      <h3>Who got the Victory Royale? (optional)</h3>
-      <div id="winner-picker"></div>
-    </div>
-
-    <div class="footer-nav">
-      <a href="setup.html">⚙ Edit setup / new game</a>
-      <span id="syncLabel"></span>
-    </div>
+  <div class="footer-nav">
+    <span class="sync-dot" id="syncDot"></span> <span id="syncLabel"></span>
   </div>
 </div>
 
@@ -161,54 +109,39 @@
 
   function render() {
     const s = Store.state;
+    if (!s || !s.meta.started) return; // still initializing
+
+    document.getElementById("syncDot").classList.toggle("local", Store.backend.mode === "local");
     document.getElementById("syncLabel").textContent =
       Store.backend.mode === "sheets" ? "● synced" : "● local-only";
 
-    if (!s.meta.started) {
-      document.getElementById("not-started").style.display = "block";
-      document.getElementById("game-area").style.display = "none";
-      return;
-    }
-    document.getElementById("not-started").style.display = "none";
-    document.getElementById("game-area").style.display = "block";
-
     // status bar
-    const cond = s.meta.endCondition;
-    let condLabel = "";
-    if (cond.type === "games") condLabel = `Round <b>${s.meta.round}</b> of <b>${cond.value}</b>`;
-    if (cond.type === "wins") condLabel = `First to <b>${cond.value}</b> wins`;
-    if (cond.type === "time") condLabel = `Ends <b>${new Date(s.meta.endTimestamp).toLocaleString()}</b>`;
-    if (cond.type === "manual") condLabel = `Playing until someone taps out`;
+    const round = s.meta.round;
+    const total = s.meta.endCondition.value || 6;
     document.getElementById("status-bar").innerHTML = `
-      <div class="status-pill">🔥 ${condLabel}</div>
-      <div class="status-pill">Round <b>${s.meta.round}</b></div>
+      <div class="status-pill">🎮 Round <b>${round}</b> of <b>${total}</b></div>
+      <div class="status-pill">🔥 Most votes loses</div>
     `;
 
-    // punishment ceremony
+    // punishment / game-over screen
     const loserArea = document.getElementById("loser-area");
     if (s.meta.finished) {
       const loser = Store.loser();
       const p = s.meta.punishment;
       const revealed = s.meta.punishmentRevealed;
-
       loserArea.innerHTML = `
         <div class="punishment-wrap">
           <div class="punishment-stage">
-            <div class="ps-over">🏝️ GAME OVER</div>
+            <div class="ps-over">🎆 GAME OVER 🎆</div>
             <div class="ps-loser">${loser.name} had the most votes</div>
             <div class="ps-votes">🔥 ${loser.totalVotes} votes against them</div>
-
             ${!revealed ? `
-              <div style="margin-top:4px;">
+              <div>
                 <div style="font-family:var(--font-mono);font-size:12px;color:var(--sand-dim);margin-bottom:16px;">
                   Their punishment has been sealed. Hit the button to find out.
                 </div>
-                <button class="reveal-btn" id="revealBtn">
-                  🔥 Reveal Punishment 🔥
-                </button>
-              </div>
-            ` : ``}
-
+                <button class="reveal-btn" id="revealBtn">🎇 Reveal Punishment 🎇</button>
+              </div>` : ''}
             ${revealed && p ? `
               <div class="punishment-card show">
                 <div class="pc-emoji">${p.emoji}</div>
@@ -218,10 +151,10 @@
               </div>
               <div class="kill-board">
                 <div class="kill-board-title">🔪 Final Kill Board (revealed)</div>
-                ${[...s.players].sort((a,b) => (b.totalKills||0)-(a.totalKills||0)).map((pl,i) => `
-                  <div class="kill-row ${i===0 ? 'top' : ''}">
+                ${[...s.players].sort((a,b)=>(b.totalKills||0)-(a.totalKills||0)).map((pl,i)=>`
+                  <div class="kill-row ${i===0?'top':''}">
                     <div>
-                      <div class="kr-name">${i===0 ? '🏆 ' : ''}${pl.name}</div>
+                      <div class="kr-name">${i===0?'🏆 ':''}${pl.name}</div>
                       <div class="kr-label">${pl.totalVotes} votes against</div>
                     </div>
                     <div style="text-align:right;">
@@ -229,30 +162,26 @@
                       <div class="kr-label">kills</div>
                     </div>
                   </div>`).join('')}
-              </div>
-            ` : ``}
+              </div>` : ''}
           </div>
         </div>`;
 
       const revealBtn = document.getElementById("revealBtn");
-      if (revealBtn) {
-        revealBtn.addEventListener("click", async () => {
-          revealBtn.textContent = "⏳ Deciding fate…";
-          revealBtn.disabled = true;
-          await Store.revealPunishment();
-        });
-      }
+      if (revealBtn) revealBtn.addEventListener("click", async () => {
+        revealBtn.textContent = "⏳ Deciding fate…";
+        revealBtn.disabled = true;
+        await Store.revealPunishment();
+      });
     } else {
       loserArea.innerHTML = "";
     }
 
     // player grid
-    const leaderVotes = Math.max(...s.players.map((p) => p.totalVotes));
-    document.getElementById("player-grid").innerHTML = s.players
-      .map((p) => {
-        const pendingCount = p.pendingDrinks.filter((d) => !d.done).length;
-        const isLeader = p.totalVotes === leaderVotes && leaderVotes > 0;
-        return `
+    const leaderVotes = Math.max(...s.players.map(p => p.totalVotes));
+    document.getElementById("player-grid").innerHTML = s.players.map(p => {
+      const pendingCount = p.pendingDrinks.filter(d => !d.done).length;
+      const isLeader = p.totalVotes === leaderVotes && leaderVotes > 0;
+      return `
         <div class="card ${isLeader ? "leader" : ""}">
           <div class="torch" style="--flame-h:${flameHeight(p.totalVotes)}px">
             <div class="flame"></div>
@@ -260,35 +189,33 @@
           </div>
           <div class="player-name">${p.name}</div>
           <div class="player-votes">${p.totalVotes}</div>
-          <div class="player-stat">VOTES AGAINST &middot; ${p.wins} WIN${p.wins === 1 ? "" : "S"}</div>
-          <div class="player-pending">${pendingCount ? `${pendingCount} drink${pendingCount === 1 ? "" : "s"} still owed` : ""}</div>
-          <a class="card-link" href="player.html?id=${p.id}">Go to ${p.name.split(" ")[0]}'s screen →</a>
+          <div class="player-stat">VOTES AGAINST &middot; ${p.wins} WIN${p.wins===1?'':'S'}</div>
+          <div class="player-pending">${pendingCount ? `${pendingCount} drink${pendingCount===1?'':'s'} still owed` : ''}</div>
+          <a class="card-link" href="player.html?id=${p.id}">Go to ${p.name.split(' ')[0]}'s screen →</a>
         </div>`;
-      })
-      .join("");
+    }).join('');
 
-    // round panel — who has submitted
+    // round panel
     const panel = document.getElementById("round-panel");
     if (!s.meta.finished) {
       panel.style.display = "block";
-      // Kill counts are hidden until end — only show submission status
-      document.getElementById("round-status").innerHTML = s.players
-        .map((p) => {
-          let stateLabel = "waiting to submit";
-          if (p.roundKills !== null && !p.roundDistributed) stateLabel = "choosing drinks to hand out";
-          if (p.roundDistributed) stateLabel = "✓ drinks handed out";
-          return `<div class="checklist-item ${p.roundDistributed ? "done" : ""}">
-            <span style="width:10px;height:10px;border-radius:50%;background:${p.roundDistributed ? "var(--green-bright)" : "var(--ember)"};"></span>
-            <span class="ci-text">${p.name}: ${stateLabel}</span>
-          </div>`;
-        })
-        .join("");
-      document.getElementById("winner-picker").innerHTML = s.players
-        .map((p) => `<button class="btn secondary" data-winner="${p.id}" style="${s.meta.roundWinner === p.id ? "border-color:var(--gold);color:var(--gold);" : ""}">${p.name}${s.meta.roundWinner === p.id ? " ✓" : ""}</button>`)
-        .join(" ");
-      document.querySelectorAll("[data-winner]").forEach((b) => {
+      document.getElementById("round-status").innerHTML = s.players.map(p => {
+        let label = "waiting to submit";
+        if (p.roundKills !== null && !p.roundDistributed) label = "choosing drinks to hand out";
+        if (p.roundDistributed) label = "✓ drinks handed out";
+        return `<div class="checklist-item ${p.roundDistributed ? 'done' : ''}">
+          <span style="width:10px;height:10px;border-radius:50%;background:${p.roundDistributed ? 'var(--green-bright)' : 'var(--ember)'};flex-shrink:0;"></span>
+          <span class="ci-text">${p.name}: ${label}</span>
+        </div>`;
+      }).join('');
+
+      // winner picker
+      document.getElementById("winner-picker").innerHTML = s.players.map(p =>
+        `<button class="btn secondary" data-winner="${p.id}" style="${s.meta.roundWinner===p.id?'border-color:var(--gold);color:var(--gold);':''}">${p.name}${s.meta.roundWinner===p.id?' ✓':''}</button>`
+      ).join(' ');
+      document.querySelectorAll("[data-winner]").forEach(b => {
         b.addEventListener("click", async () => {
-          const id = parseInt(b.dataset.winner, 10);
+          const id = parseInt(b.dataset.winner);
           await Store.setRoundWinner(s.meta.roundWinner === id ? null : id);
         });
       });
@@ -297,43 +224,63 @@
     }
 
     // action row
-    const actionRow = document.getElementById("action-row");
     let html = "";
     if (!s.meta.finished) {
-      if (Store.allSubmitted()) {
-        html += `<button class="btn" id="closeRoundBtn">Close Round & Start Next →</button>`;
-      }
+      if (Store.allSubmitted()) html += `<button class="btn" id="closeRoundBtn">Close Round & Start Next →</button>`;
       html += `<button class="btn danger" id="endGameBtn">End Game Now</button>`;
     } else {
       html += `<button class="btn" id="newGameBtn">Start New Game</button>`;
     }
-    actionRow.innerHTML = html;
+    document.getElementById("action-row").innerHTML = html;
 
     const closeBtn = document.getElementById("closeRoundBtn");
     if (closeBtn) closeBtn.addEventListener("click", async () => { await Store.closeRound(); });
+
     const endBtn = document.getElementById("endGameBtn");
     if (endBtn) endBtn.addEventListener("click", async () => {
-      if (confirm("End the game now and crown today's loser?")) await Store.endGameNow();
+      if (confirm("End the game now?")) await Store.endGameNow();
     });
+
     const newBtn = document.getElementById("newGameBtn");
-    if (newBtn) newBtn.addEventListener("click", () => { window.location.href = "setup.html"; });
+    if (newBtn) newBtn.addEventListener("click", async () => {
+      if (confirm("Start a brand new game? This resets all votes and kills.")) {
+        document.getElementById("init-overlay").style.display = "flex";
+        document.getElementById("main-wrap").style.display = "none";
+        document.getElementById("init-msg").textContent = "Starting new game…";
+        await Store.setupAndStart(PRESET.names, "games", PRESET.rounds, null);
+        document.getElementById("init-overlay").style.display = "none";
+        document.getElementById("main-wrap").style.display = "block";
+      }
+    });
   }
 
   async function boot() {
     renderBrand("the dashboard");
+
+    const msg = document.getElementById("init-msg");
+    msg.textContent = "Connecting…";
+
     Store.onChange(render);
     await Store.init();
 
-    // If sheets mode and game shows as not started, wait and retry once —
-    // handles the case where setup.html just saved and the sheet hasn't
-    // propagated to this page's first GET yet.
+    // Sheets: retry once if state came back empty (propagation lag)
     if (Store.backend.mode === "sheets" && !Store.state.meta.started) {
-      await new Promise((r) => setTimeout(r, 1200));
+      msg.textContent = "Checking sheet…";
+      await new Promise(r => setTimeout(r, 1400));
       await Store.refresh();
     }
 
+    // Auto-start with preset config if no game is running
+    if (!Store.state.meta.started) {
+      msg.textContent = Store.backend.mode === "sheets" ? "Starting game on sheet…" : "Starting game…";
+      await Store.setupAndStart(PRESET.names, "games", PRESET.rounds, null);
+    }
+
+    document.getElementById("init-overlay").style.display = "none";
+    document.getElementById("main-wrap").style.display = "block";
     render();
   }
+
   boot();
 </script>
 </body>

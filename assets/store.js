@@ -40,11 +40,11 @@ const PUNISHMENTS = [
   { id: "loko",    emoji: "🍺", title: "Shotgun a 4 Loko",     desc: "Full can of 4 Loko, shotgunned. Tomorrow. Pick your flavour wisely because you’re finishing it." },
   { id: "edible",  emoji: "🟢", title: "100mg Edible Soda",    desc: "100mg edible mixed into a soda of the group’s choosing. Tomorrow. Enjoy the ride." },
   { id: "nudie",   emoji: "🏃", title: "Nudie Run",             desc: "Naked lap. Full sprint around the block. Everyone comes outside to watch. No skipping." },
-   { id: "Icyhot",   emoji: "🥶", title: "Icey Nuts",             desc: "Apply Icey Hot to your nuts and go outside. Punishment over fast, but pain forever" },
-   { id: "Glizzy Geek",   emoji: "🌭", title: "Glizzy Geek",             desc: "For the beach tomorrow your fit is a hotdog costume and a speed. What could be more American" },
 ];
 
-const PLAYER_NAMES = ["Brock", "Tyler", "Aldo", "Danny"];
+const PLAYER_NAMES = ["Brock", "Tyler", "Danny", "Aldo"];
+
+const PRESET = { names: ["Brock", "Tyler", "Danny", "Aldo"], rounds: 6 };
 
 const DEFAULT_STATE = () => ({
   meta: {
@@ -52,7 +52,7 @@ const DEFAULT_STATE = () => ({
     started: false,
     finished: false,
     round: 1,
-    endCondition: { type: "games", value: 10 }, // 'games' | 'wins' | 'time' | 'manual'
+    endCondition: { type: "games", value: 6 }, // 'games' | 'wins' | 'time' | 'manual'
     endTimestamp: null, // ms epoch, used when type === 'time'
     updatedAt: Date.now(),
   },
@@ -460,3 +460,4 @@ const Store = {
 window.Store = Store;
 window.MISSION_POOL = MISSION_POOL;
 window.PUNISHMENTS = PUNISHMENTS;
+window.PRESET = PRESET;
