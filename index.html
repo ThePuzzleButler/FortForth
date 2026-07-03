@@ -323,6 +323,15 @@
     renderBrand("the dashboard");
     Store.onChange(render);
     await Store.init();
+
+    // If sheets mode and game shows as not started, wait and retry once —
+    // handles the case where setup.html just saved and the sheet hasn't
+    // propagated to this page's first GET yet.
+    if (Store.backend.mode === "sheets" && !Store.state.meta.started) {
+      await new Promise((r) => setTimeout(r, 1200));
+      await Store.refresh();
+    }
+
     render();
   }
   boot();

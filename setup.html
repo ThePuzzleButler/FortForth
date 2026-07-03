@@ -118,23 +118,41 @@
   }
 
   document.getElementById("startBtn").addEventListener("click", async () => {
-    const names = [1, 2, 3, 4].map((i) => document.getElementById(`name${i}`).value);
-    await Store.setPlayerNames(names);
+    const btn = document.getElementById("startBtn");
+    const warn = document.getElementById("warn-msg");
 
     let value = null, endTimestamp = null;
     if (selectedType === "games") value = parseInt(document.getElementById("gamesVal").value, 10) || 10;
-    if (selectedType === "wins") value = parseInt(document.getElementById("winsVal").value, 10) || 3;
+    if (selectedType === "wins")  value = parseInt(document.getElementById("winsVal").value,  10) || 3;
     if (selectedType === "time") {
       const v = document.getElementById("timeVal").value;
       if (!v) {
-        document.getElementById("warn-msg").textContent = "Pick an end date/time first.";
-        document.getElementById("warn-msg").className = "banner warn";
+        warn.textContent = "Pick an end date/time first.";
+        warn.className = "banner warn";
         return;
       }
       endTimestamp = new Date(v).getTime();
     }
-    await Store.setEndCondition(selectedType, value, endTimestamp);
-    await Store.startGame();
+
+    // Show loading state
+    btn.disabled = true;
+    btn.textContent = Store.backend.mode === "sheets" ? "Saving to sheet…" : "Starting…";
+    warn.textContent = "";
+
+    const names = [1, 2, 3, 4].map((i) => document.getElementById(`name${i}`).value);
+
+    // Single commit — no race condition
+    await Store.setupAndStart(names, selectedType, value, endTimestamp);
+
+    // Double-check the state is actually started before navigating
+    if (!Store.state.meta.started) {
+      btn.disabled = false;
+      btn.textContent = "Start Game →";
+      warn.textContent = "Save failed — check your connection and try again.";
+      warn.className = "banner warn";
+      return;
+    }
+
     window.location.href = "index.html";
   });
 
