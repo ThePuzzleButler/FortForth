@@ -40,6 +40,8 @@ const PUNISHMENTS = [
   { id: "loko",    emoji: "🍺", title: "Shotgun a 4 Loko",     desc: "Full can of 4 Loko, shotgunned. Tomorrow. Pick your flavour wisely because you’re finishing it." },
   { id: "edible",  emoji: "🟢", title: "100mg Edible Soda",    desc: "100mg edible mixed into a soda of the group’s choosing. Tomorrow. Enjoy the ride." },
   { id: "nudie",   emoji: "🏃", title: "Nudie Run",             desc: "Naked lap. Full sprint around the block. Everyone comes outside to watch. No skipping." },
+   { id: "icyhot",   emoji: "🏃", title: "Icy Hot",             desc: "Put Icy Hot on your Balls. Punishment is fast, but pain lasts forever" },
+   { id: "glizzy",   emoji: "🏃", title: "Glizzy Glaze",             desc: "Your beach outfit tomorrow is a Hot Dog Costume and a Speedo. What could be more American" },
 ];
 
 const PLAYER_NAMES = ["Brock", "Tyler", "Danny", "Aldo"];
