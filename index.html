@@ -57,6 +57,30 @@
   .kill-row .kr-name  { font-family: var(--font-body); font-size: 14px; font-weight: 600; }
   .kill-row .kr-kills { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--gold); }
   .kill-row .kr-label { font-family: var(--font-mono); font-size: 10px; color: var(--sand-dim); }
+  /* punishment picker */
+  .punishment-picker { margin-top: 20px; }
+  .pick-title { font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--sand-dim); margin-bottom: 14px; }
+  .punishment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 560px) { .punishment-options { grid-template-columns: 1fr; } }
+  .punishment-choice {
+    background: rgba(238,242,255,0.04);
+    border: 2px solid rgba(74,144,226,0.2);
+    border-radius: var(--radius);
+    padding: 18px 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.15s, background 0.15s, transform 0.12s;
+  }
+  .punishment-choice:hover {
+    border-color: var(--ember);
+    background: rgba(220,38,38,0.1);
+    transform: translateY(-2px);
+  }
+  .punishment-choice:active { transform: scale(0.97); }
+  .pc-choice-emoji { font-size: 36px; margin-bottom: 8px; line-height: 1; }
+  .pc-choice-title { font-family: var(--font-display); font-size: 15px; color: var(--gold); margin-bottom: 6px; }
+  .pc-choice-desc  { font-size: 11px; color: var(--sand-dim); line-height: 1.4; }
+
   /* loading overlay */
   .init-overlay {
     position: fixed; inset: 0; z-index: 99;
@@ -135,19 +159,26 @@
             <div class="ps-over">🎆 GAME OVER 🎆</div>
             <div class="ps-loser">${loser.name} had the most votes</div>
             <div class="ps-votes">🔥 ${loser.totalVotes} votes against them</div>
+
             ${!revealed ? `
-              <div>
-                <div style="font-family:var(--font-mono);font-size:12px;color:var(--sand-dim);margin-bottom:16px;">
-                  Their punishment has been sealed. Hit the button to find out.
+              <div class="punishment-picker">
+                <div class="pick-title">👇 ${loser.name}, choose your fate</div>
+                <div class="punishment-options">
+                  ${PUNISHMENTS.map(pu => `
+                    <button class="punishment-choice" data-punishment="${pu.id}">
+                      <div class="pc-choice-emoji">${pu.emoji}</div>
+                      <div class="pc-choice-title">${pu.title}</div>
+                      <div class="pc-choice-desc">${pu.desc}</div>
+                    </button>`).join('')}
                 </div>
-                <button class="reveal-btn" id="revealBtn">🎇 Reveal Punishment 🎇</button>
               </div>` : ''}
+
             ${revealed && p ? `
               <div class="punishment-card show">
                 <div class="pc-emoji">${p.emoji}</div>
                 <div class="pc-title">${p.title}</div>
                 <div class="pc-desc">${p.desc}</div>
-                <div class="pc-stamp">⚖️ The jury has spoken ⚖️</div>
+                <div class="pc-stamp">⚖️ ${loser.name} chose their fate ⚖️</div>
               </div>
               <div class="kill-board">
                 <div class="kill-board-title">🔪 Final Kill Board (revealed)</div>
@@ -166,11 +197,13 @@
           </div>
         </div>`;
 
-      const revealBtn = document.getElementById("revealBtn");
-      if (revealBtn) revealBtn.addEventListener("click", async () => {
-        revealBtn.textContent = "⏳ Deciding fate…";
-        revealBtn.disabled = true;
-        await Store.revealPunishment();
+      document.querySelectorAll(".punishment-choice").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          document.querySelectorAll(".punishment-choice").forEach(b => b.disabled = true);
+          btn.style.borderColor = "var(--gold)";
+          btn.style.background = "rgba(245,197,24,0.15)";
+          await Store.choosePunishment(btn.dataset.punishment);
+        });
       });
     } else {
       loserArea.innerHTML = "";
